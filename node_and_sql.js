@@ -1,24 +1,17 @@
-const Pool = require("pg").Pool;
-const pool = new Pool({
+let {Client} = require('pg')
+
+let client = new Client({
   user: "user",
-  host: "localhost",
-  database: "db",
   password: "pass",
-  port: 5432
-});
+  host: "localhost",
+  port: 5432,
+  database: "umuzi"
+})
 
-const helloWorld = () => {
-  pool.query(
-    "SELECT $1::text as message",
-    ["Hello world!"],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-
-      console.log(results.rows);
-    }
-  );
-};
-
-helloWorld();
+client.connect()
+  .then(() => console.log("Connected successfully"))
+  .then(()=> client.query("Insert into employees(Name, Surname) values($1, $2)", ["Ephraim","Mamonong"]))
+  .then(()=> client.query("select * from employees"))
+  .then(results => console.table(results.rows))
+  .catch(e => console.log(e))
+  .finally(() => client.end())

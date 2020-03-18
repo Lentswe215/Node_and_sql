@@ -1,8 +1,8 @@
 {
   "name": "node_and_sql",
   "version": "1.0.0",
-  "description": "",
   "main": "node_and_sql.js",
+"test command": "node.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,5 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "pg": "^7.18.2"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

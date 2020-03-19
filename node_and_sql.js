@@ -41,12 +41,38 @@ class Visitors {
     .catch((e) => console.log(e))
     .finally(()=> client.end())
   }
+  updateVisitorInfo(columnToUpdate, newInfo){
 
+    client.connect()
+    .then(() => client.query("UPDATE visitors SET "+columnToUpdate+" = $1 WHERE fullname = $2", [newInfo, this.fullName]))
+    .then(() => console.log("Visitor information successfully updated"))
+    .catch((e)=> console.log(e))
+    .finally(()=> client.end())
+  }
+
+  selectOneVisitor(visitorID){
+    client.connect()
+    .then(()=> client.query("SELECT * from visitors WHERE visitorid = $1", [visitorID]))
+    .then(results => console.table(results.rows))
+    .catch((e) => console.log(e))
+    .finally(()=> client.end())
+  }
+  
+  deleteAllVisitors() {
+    client.connect()
+    .then(() => client.query("DELETE from visitors"))
+    .then(() => console.log("Visitors Successfully deleted"))
+    .catch((e) => console.log(e))
+    .finally(() => client.end())
+  }
 }
 let visitor = new Visitors();
-let visitor2 = new Visitors("Ephraim Mamonong", 25, "12-07-2019", "10:42","Gomolemo Josephs", "It is a great place with wonderful view of the ocean and there is lots of fresh air around")
+let visitor1 = new Visitors("Lebogang Nkoane", 54, "01-31-2019", "09:23", "Ronald KingSton", "The staff was rude")
+let visitor2 = new Visitors("Katlego Maboe")
 
-visitor.listAllVisitors()
+// visitor1.addNewVisitor()
+// visitor.deleteAllVisitors()
+// visitor2.updateVisitorInfo("assistedby", "George Lopez")
 // visitor2.deleteVisitor()
 
 // client.connect()

@@ -1,5 +1,12 @@
-let {Client} = require('pg')
+let {Pool, Client} = require('pg')
 
+let pool = new Pool({
+  user: "user",
+  password: "pass",
+  host: "localhost",
+  port: 5432,
+  database: "visitordb"
+})
 let client = new Client({
   user: "user",
   password: "pass",
@@ -17,7 +24,18 @@ class Visitors {
     this.assistedBy = assistedBy;
     this.comments = comments;
   }
+  createTable() {
+    pool.connect()
 
+    .then(() => pool.query("CREATE TABLE Visitors(visitorID SERIAL PRIMARY KEY, fullname VARCHAR(50), visitorsage INT, dateofvisit DATE, timeofvisit TIME, assistedBy VARCHAR(50), comments VARCHAR(100))",(error, respond)=>
+    {
+      console.log(error, respond)
+    })
+    )
+    .then(() => console.log("Successfully created the table"))
+    .catch((e) => console.log(e))
+    .finally(()=> pool.end())
+  }
   addNewVisitor(){
     client.connect()
     .then(()=> client.query("INSERT into visitors(fullname, visitorage, dateofvisit, timeofvisit, assistedby, comments) values ($1,$2,$3,$4,$5,$6)",[this.fullName, this.age, this.dateOfVisit, this.timeOfVisit, this.assistedBy, this.comments]))
@@ -73,7 +91,7 @@ let visitor2 = new Visitors("Katlego Maboe")
 // visitor1.addNewVisitor()
 // visitor.deleteAllVisitors()
 // visitor2.updateVisitorInfo("assistedby", "George Lopez")
-// visitor2.deleteVisitor()
+visitor.createTable();
 
 // client.connect()
 //   .then(() => console.log("Connected successfully"))

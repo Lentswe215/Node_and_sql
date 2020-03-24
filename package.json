@@ -2,13 +2,14 @@
   "name": "node_and_sql",
   "version": "1.0.0",
   "main": "node_and_sql.js",
-"test command": "node.js",
+  "test command": "node.js",
   "scripts": {
-    "test": "node node_and_sql.js"
+    "test": "node ./src/node_and_sql.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jasmine": "^3.5.0",
     "pg": "^7.18.2"
   },
   "devDependencies": {},

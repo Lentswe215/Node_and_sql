@@ -1,115 +1,95 @@
-let { Pool } = require("pg");
+let {Pool} = require("pg");
 
 let pool = new Pool({
-  user: "user",
-  password: "pass",
-  host: "localhost",
-  port: 5432,
-  database: "visitordb"
+    user: "user",
+    password: "pass",
+    host: "localhost",
+    port: 5432,
+    database: "visitordb"
 });
 
 class Visitors {
-  constructor(fullName, age, dateOfVisit, timeOfVisit, assistedBy, comments) {
-    this.fullName = fullName;
-    this.age = age;
-    this.dateOfVisit = dateOfVisit;
-    this.timeOfVisit = timeOfVisit;
-    this.assistedBy = assistedBy;
-    this.comments = comments;
-  }
-  async createTable() {
-    try {
-      await pool.connect();
-      await pool.query(
-        "CREATE TABLE Visitors(visitorID SERIAL PRIMARY KEY, fullname VARCHAR(50), visitorsage INT, dateofvisit DATE, timeofvisit TIME, assistedBy VARCHAR(50), comments VARCHAR(100))"
-      );
-    } catch (e) {
-      console.log(e);
-    } finally {
-      return "Successfully created the table";
+    constructor(fullName, age, dateOfVisit, timeOfVisit, assistedBy, comments) {
+        this.fullName = fullName;
+        this.age = age;
+        this.dateOfVisit = dateOfVisit;
+        this.timeOfVisit = timeOfVisit;
+        this.assistedBy = assistedBy;
+        this.comments = comments;
+        this.myTryCatch = () => {
+            try {
+                this.myQuery;
+            } catch (err) {
+                throw this.errorMessage;
+            }
+        };
+
+        this.myCallBack = err => {
+            if (err) {
+                throw Error(this.errorMessage);
+            } else {
+                console.log(this.message);
+            }
+        };
     }
-  }
 
-  async addNewVisitor() {
-    try {
-      await pool.connect();
-      await pool.query(
-        "INSERT into visitors(fullname, visitorsage, dateofvisit, timeofvisit, assistedby, comments) values ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
-        [
-          this.fulName,
-          this.age,
-          this.dateOfVisit,
-          this.timeOfVisit,
-          this.assistedBy,
-          this.comments
-        ]
-      );
-      console.log
-    } catch (e) {
-      console.log(e);
+    async createTable() {
+        this.myTryCatch;
+        this.myQuery = await pool.query("CREATE TABLE visitors(visitorID SERIAL PRIMARY KEY, fullname VARCHAR(50), visitorsage INT, dateofvisit DATE, timeofvisit TIME, assistedBy VARCHAR(50), comments VARCHAR(100), unique(fullname))", this.myCallBack);
+        this.message = "Table successfully created";
+        this.errorMessage = "Table already exists";
     }
-  }
-
-  async listAllVisitors() {
-    try {
-      await pool.connect();
-      let { rows } = await pool.query("SELECT * from visitors");
-      console.table(rows);
-    } catch (e) {
-      console.log(e);
+    async addNewVisitor() {
+        this.myTryCatch;
+        this.myQuery = await pool.query("INSERT into visitors(fullname, visitorsage, dateofvisit, timeofvisit, assistedby, comments) values ($1,$2,$3,$4,$5,$6)", [
+            this.fullName,
+            this.age,
+            this.dateOfVisit,
+            this.timeOfVisit,
+            this.assistedBy,
+            this.comments
+        ], this.myCallBack);
+        this.errorMessage = "Visitor already exists";
+        this.message = "Visitor successfully added";
     }
-  }
 
-  async deleteVisitor() {
-    try {
-      await pool.connect();
-      await pool.query("DELETE from visitors WHERE fullname = $1", [
-        this.fullName
-      ]);
-      console.log("Visitor successfully deleted")
-    } catch (e) {
-      console.log(e);
-    } 
-  }
-
-  async updateVisitorInfo(columnToUpdate, newInfo) {
-    try {
-      await pool.connect();
-      await pool.query(
-        "UPDATE visitors SET " + columnToUpdate + " = $1 WHERE fullname = $2",
-        [newInfo, this.fullName]
-      );
-      console.log("Visitor information successfully updated")
-    } catch (e) {
-      throw Error("Visitor information not update");
-    } 
-  }
-
-  async selectOneVisitor(visitorID) {
-    try {
-      await pool.connect();
-      let {
-        rows
-      } = await pool.query("SELECT * from visitors WHERE visitorid = $1", [
-        visitorID
-      ]);
-      console.table(rows);
-    } catch (e) {
-      console.log(e);
+    async listAllVisitors() {
+        this.myTryCatch;
+        let results = (this.myQuery = await pool.query("SELECT * from visitors"));
+        console.table(results.rows);
+        this.errorMessage = "Table doesn't exists";
     }
-  }
 
-  async deleteAllVisitors() {
-    try {
-      pool.connect();
-      pool.query("DELETE from visitors");
-      console.log("Visitors Successfully deleted");
-    } catch (e) {
-      console.log(e);
+    async deleteVisitor() {
+        this.myTryCatch;
+        this.myQuery = await pool.query("DELETE from visitors WHERE fullname = $1", [this.fullName], this.myCallBack);
+        this.errorMessage = "Visitor doesn't exist";
+        this.message = "Visitor successfully deleted";
     }
-  }
+
+    async updateVisitorInfo(columnToUpdate, newInfo) {
+        this.myTryCatch;
+        this.myQuery = await pool.query("UPDATE visitors SET " + columnToUpdate + " = $1 WHERE fullname = $2", [
+            newInfo, this.fullName
+        ], this.myCallBack);
+        this.errorMessage = "Unable to update visitor information";
+        this.message = "Visitor successfully updated";
+    }
+    async selectOneVisitor(visitorID) {
+        this.myTryCatch;
+        let results = (this.myQuery = await pool.query("SELECT * FROM visitors WHERE visitorid = $1", [visitorID]));
+        console.table(results.rows);
+        this.errorMessage = "Visitor doesn't exists";
+    }
+
+    async deleteAllVisitors() {
+        this.myTryCatch;
+        this.myQuery = pool.query("DELETE from visitors", this.myCallBack);
+        this.message = "Visitors Successfully deleted";
+        this.errorMessage = "Unable to delete visitor";
+    }
 }
 
 module.exports = {
-  Visitors
+    Visitors
 };

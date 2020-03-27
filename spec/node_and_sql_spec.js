@@ -30,7 +30,7 @@ describe("Visitor", function() {
     expect(visitor.deleteAllVisitors).toBeDefined();
   });
 });
-describe("Visitor mock test", function() {
+describe("Visitor", function() {
   it("spy on the addNewVisitor function", () => {
     spyOn(visitor, "addNewVisitor");
 
@@ -68,3 +68,5 @@ describe("Visitor mock test", function() {
     expect(visitor.deleteAllVisitors).toHaveBeenCalled();
   });
 });
+
+

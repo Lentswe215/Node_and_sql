@@ -1,95 +1,99 @@
-let {Pool} = require("pg");
+let { Client } = require("pg");
 
-let pool = new Pool({
-    user: "user",
-    password: "pass",
-    host: "localhost",
-    port: 5432,
-    database: "visitordb"
+let client = new Client({
+  user: "user",
+  password: "pass",
+  host: "localhost",
+  port: 5432,
+  database: "visitordb",
 });
-
 class Visitors {
-    constructor(fullName, age, dateOfVisit, timeOfVisit, assistedBy, comments) {
-        this.fullName = fullName;
-        this.age = age;
-        this.dateOfVisit = dateOfVisit;
-        this.timeOfVisit = timeOfVisit;
-        this.assistedBy = assistedBy;
-        this.comments = comments;
-        this.myTryCatch = () => {
-            try {
-                this.myQuery;
-            } catch (err) {
-                throw this.errorMessage;
-            }
-        };
+  constructor(fullname, age, dateofvisit, timeofvisit, assistedby, comments) {
+    this.fullname = fullname;
+    this.age = age;
+    this.dateofvisit = dateofvisit;
+    this.timeofvisit = timeofvisit;
+    this.assistedby = assistedby;
+    this.comments = comments;
+    client.connect();
+  }
 
-        this.myCallBack = err => {
-            if (err) {
-                throw Error(this.errorMessage);
-            } else {
-                console.log(this.message);
-            }
-        };
+  async addNewVisitor() {
+    try {
+      let results = await client.query(
+        "INSERT into visitors(fullname, visitorsage, dateofvisit, timeofvisit, assistedby, comments) values($1,$2,$3,$4,$5,$6) ON CONFLICT(fullname) DO UPDATE SET dateofvisit = EXCLUDED.dateofvisit  RETURNING *",
+        [
+          this.fullname,
+          this.age,
+          this.dateofvisit,
+          this.timeofvisit,
+          this.assistedby,
+          this.comments,
+        ]
+      );
+      return results.rows;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    async createTable() {
-        this.myTryCatch;
-        this.myQuery = await pool.query("CREATE TABLE visitors(visitorID SERIAL PRIMARY KEY, fullname VARCHAR(50), visitorsage INT, dateofvisit DATE, timeofvisit TIME, assistedBy VARCHAR(50), comments VARCHAR(100), unique(fullname))", this.myCallBack);
-        this.message = "Table successfully created";
-        this.errorMessage = "Table already exists";
+  async viewAllVisitors() {
+    try {
+      let results = await client.query("SELECT * from visitors");
+      return results.rows;
+    } catch (error) {
+      throw "Cannot view all visitors " + error;
     }
-    async addNewVisitor() {
-        this.myTryCatch;
-        this.myQuery = await pool.query("INSERT into visitors(fullname, visitorsage, dateofvisit, timeofvisit, assistedby, comments) values ($1,$2,$3,$4,$5,$6)", [
-            this.fullName,
-            this.age,
-            this.dateOfVisit,
-            this.timeOfVisit,
-            this.assistedBy,
-            this.comments
-        ], this.myCallBack);
-        this.errorMessage = "Visitor already exists";
-        this.message = "Visitor successfully added";
-    }
+  }
 
-    async listAllVisitors() {
-        this.myTryCatch;
-        let results = (this.myQuery = await pool.query("SELECT * from visitors"));
-        console.table(results.rows);
-        this.errorMessage = "Table doesn't exists";
+  async deleteVisitor() {
+    try {
+      let results = await client.query(
+        "DELETE from visitors WHERE fullname = $1 RETURNING *",
+        [this.fullname]
+      );
+      return results;
+    } catch (error) {
+      throw "Cannot delele a visitor " + error;
     }
+  }
 
-    async deleteVisitor() {
-        this.myTryCatch;
-        this.myQuery = await pool.query("DELETE from visitors WHERE fullname = $1", [this.fullName], this.myCallBack);
-        this.errorMessage = "Visitor doesn't exist";
-        this.message = "Visitor successfully deleted";
+  async updateVisitorInfo(columnToUpdate, newInfo) {
+    try {
+      let results = await client.query(
+        "UPDATE visitors SET " +
+          columnToUpdate +
+          "= $1 WHERE fullname = $2 RETURNING *",
+        [newInfo, this.fullname]
+      );
+      return results.rows;
+    } catch (error) {
+      throw "Cannot update visitor information" + error;
     }
+  }
 
-    async updateVisitorInfo(columnToUpdate, newInfo) {
-        this.myTryCatch;
-        this.myQuery = await pool.query("UPDATE visitors SET " + columnToUpdate + " = $1 WHERE fullname = $2", [
-            newInfo, this.fullName
-        ], this.myCallBack);
-        this.errorMessage = "Unable to update visitor information";
-        this.message = "Visitor successfully updated";
+  async viewOneVisitor(visitorid) {
+    try {
+      let results = await client.query(
+        "SELECT * from visitors WHERE visitorid = $1",
+        [visitorid]
+      );
+      return results.rows;
+    } catch (error) {
+      throw "Visitor cannot be viewed " + error;
     }
-    async selectOneVisitor(visitorID) {
-        this.myTryCatch;
-        let results = (this.myQuery = await pool.query("SELECT * FROM visitors WHERE visitorid = $1", [visitorID]));
-        console.table(results.rows);
-        this.errorMessage = "Visitor doesn't exists";
-    }
+  }
 
-    async deleteAllVisitors() {
-        this.myTryCatch;
-        this.myQuery = pool.query("DELETE from visitors", this.myCallBack);
-        this.message = "Visitors Successfully deleted";
-        this.errorMessage = "Unable to delete visitor";
+  async deleteAllVisitors() {
+    try {
+      let results = await client.query("DELETE FROM visitors");
+      return results;
+    } catch (error) {
+      throw "Visitors cannot be deleted " + error;
     }
+  }
 }
 
 module.exports = {
-    Visitors
+  Visitors
 };

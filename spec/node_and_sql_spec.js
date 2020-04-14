@@ -1,72 +1,58 @@
 let { Visitors } = require("../src/node_and_sql");
 
-let visitor = new Visitors();
-let visitor1 = new Visitors(
-  "Lebogang Nkoane",
-  54,
-  "01-31-2019",
-  "09:23",
-  "Ronald Kingston",
-  "The staff was rude"
-);
+let vis1 = new Visitors("George Hooper", 54, "04/27/2019", "12:43", "Dove Reginal", "Expencious")
+visitorInfo ={
+ visitorName: "George Hooper",
+ visitorAge:54,
+ dateOfVisit: new Date("04/27/2019"),
+ timeOfVisit: "12:43:00",
+ assistedBy: "Dove Reginal",
+ comments: "Expencious"
+}
+describe("addNewVisitor", () => {
+  it("should add the information to the visitors table",async () => {
 
-describe("Visitor", function() {
-  it("should check if the createTable is defined", function() {
-    expect(visitor1.createTable).toBeDefined();
-  });
-  it("should check if the addNewVisitor is defined", function() {
-    expect(visitor1.addNewVisitor).toBeDefined();
-  });
-  it("should check if the deleteVisitor is defined", function() {
-    expect(visitor1.deleteVisitor).toBeDefined();
-  });
-  it("should check if the updateVisitorInfo is defined", function() {
-    expect(visitor1.updateVisitorInfo).toBeDefined();
-  });
-  it("should check if the selectOneVisitor is defined", function() {
-    expect(visitor1.selectOneVisitor).toBeDefined();
-  });
-  it("Should check if deleteAllVisitors function is defined", () => {
-    expect(visitor.deleteAllVisitors).toBeDefined();
-  });
+     results = await vis1.addNewVisitor()
+    
+    expect(results[0].fullname).toEqual(visitorInfo.visitorName)
+    expect(results[0].visitorsage).toEqual(visitorInfo.visitorAge)
+    expect(results[0].dateofvisit).toEqual(visitorInfo.dateOfVisit)
+    expect(results[0].timeofvisit).toEqual(visitorInfo.timeOfVisit)
+    expect(results[0].assistedby).toEqual(visitorInfo.assistedBy)
+    expect(results[0].comments).toEqual(visitorInfo.comments)
+  })
 });
-describe("Visitor", function() {
-  it("spy on the addNewVisitor function", () => {
-    spyOn(visitor, "addNewVisitor");
 
-    visitor.addNewVisitor();
-    expect(visitor.addNewVisitor).toHaveBeenCalled();
-  });
-  it("spy on the createTable function", () => {
-    spyOn(visitor, "createTable");
+describe("viewAllVisitors", () => {
+  it("should display the information from the visitors table",async () => {
+    vis1.addNewVisitor()
+     results = await vis1.viewAllVisitors()
+ console.table(results)
+    expect(results[0].fullname).toEqual(visitorInfo.visitorName)
+    expect(results[0].visitorsage).toEqual(visitorInfo.visitorAge)
+    expect(results[0].dateofvisit).toEqual(visitorInfo.dateOfVisit)
+    expect(results[0].timeofvisit).toEqual(visitorInfo.timeOfVisit)
+    expect(results[0].assistedby).toEqual(visitorInfo.assistedBy)
+    expect(results[0].comments).toEqual(visitorInfo.comments)
+  })
+});
 
-    visitor.createTable();
-    expect(visitor.createTable).toHaveBeenCalled();
-  });
-  it("spy on the deleteVisitor function", () => {
-    spyOn(visitor, "deleteVisitor");
+describe("deleteVisitor", () => {
+  it("should delete the information of 1 visitor from the visitors table",async () => {
+    vis1.addNewVisitor()
+     results = await vis1.deleteVisitor()
+    
+    expect(results.rowCount).not.toBeNull()
+  })
+});
 
-    visitor.deleteVisitor();
-    expect(visitor.deleteVisitor).toHaveBeenCalled();
-  });
-  it("spy on the updateVisitorinfo function", () => {
-    spyOn(visitor1, "updateVisitorInfo");
-
-    visitor1.updateVisitorInfo();
-    expect(visitor1.updateVisitorInfo).toHaveBeenCalled();
-  });
-  it("spy on the selectOneVisitor function", () => {
-    spyOn(visitor1, "selectOneVisitor");
-
-    visitor1.selectOneVisitor();
-    expect(visitor1.selectOneVisitor).toHaveBeenCalled();
-  });
-  it("spy on the deleteAllVisitors function", () => {
-    spyOn(visitor, "deleteAllVisitors");
-
-    visitor.deleteAllVisitors();
-    expect(visitor.deleteAllVisitors).toHaveBeenCalled();
-  });
+describe("deleteAllVisitors", () => {
+  it("should delete the information of all visitors from the visitors table",async () => {
+    vis1.addNewVisitor()
+     results = await vis1.deleteAllVisitors()
+    
+    expect(results.rowCount).not.toBeNull()
+  })
 });
 
 

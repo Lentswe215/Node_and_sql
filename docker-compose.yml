@@ -5,7 +5,7 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=db
+      - POSTGRES_DB=visitordb
     volumes:
       - ./gitignore/postgresql:/var/lib/postgresql/data
     ports:

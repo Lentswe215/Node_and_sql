@@ -1,17 +1,25 @@
 {
   "name": "node_and_sql",
   "version": "1.0.0",
-  "main": "node_and_sql.js",
-  "test command": "node.js",
+  "main": "visitor.js",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "jasmine": "^3.5.0",
+    "pg": "^8.0.3"
+  },
+  "devDependencies": {},
   "scripts": {
-    "test": "node ./src/node_and_sql.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "jasmine": "^3.5.0",
-    "pg": "^7.18.2"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lentswe215/Node_and_sql.git"
   },
-  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/Lentswe215/Node_and_sql/issues"
+  },
+  "homepage": "https://github.com/Lentswe215/Node_and_sql#readme",
   "description": ""
 }
